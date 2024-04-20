@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage{../preamble}
+
+
+\title{Simplificial Complexes}
+\author{Mazino}
+\date{18 March 2024}
+
+
+\begin{document}
+
+
+\maketitle
+
+\section{Motivation}
+
+\section{Definitions}
+
+\begin{definition}[Simplicies]
+
+Simplciies can be seen as "triangles" in higher dimensions.\\
+A 0-simplex is a point, a 1-simplex is a line segment, a 2-simplex is a triangle, a 3-simplex is a tetrahedron, and so on.
+A k-simplex is the convex hull of k+1 affinely independent points in $\mathbb{R}^n$.
+\end{definition}
+
+\begin{remark}
+    The boundary of a k-simplex is the union of its (k-1)-dimensional faces.
+\end{remark}
+
+
+A simplicial complex is a set of simplicies glued by their faces.
+
+\begin{definition}[Simplicial Complex]
+    Let $K$ be a set of simplicies in $\mathbb{R}^n$. $K$ is a simplicial complex if:
+    \begin{enumerate}
+        \item Every face of a simplex in $K$ is also in $K$.
+        \item The intersection of any two simplicies in $K$ is a face of each of them.
+    \end{enumerate}
+\end{definition}
+
+\begin{example}
+    
+\end{example}
+
+For example can we construct a circle from a simplicial complex?
+
+We can just take 3 three points and connect them with 1-simplicies to form a triangle And this is a 2-simplex. Then we can considere this as homeomorphic to a circle.
+
+We can do the same with a 2-simplex to form a disk.
+
+
+Let's considerate another definition of a simplicial complex.
+
+\begin{definition}[Abstract simplicial complexes]
+    An abstract simplicial complex is a non-empty family of sets (called simplicies) closed under the operation of taking subsets, i.e. if $A$ is a set in the family, and $B$ is a non empty subset of $A$, then $B$ is also in the family.
+
+    A family of sets X is an abstract simplicial complex if and only if:
+    \(Y_1 \in X \) and \(Y_2 \subset Y1 \) and  \(Y_2 \neq \emptyset \) implies \(Y_1 \cap Y_2 \in X \)
+\end{definition}
+
+More intuitively we can think that we take the simplicial complexes and we decompose it into 0-simplicies, 1-simplicies, 2-simplicies, etc. And we can think of the simplicial complex as a set of vertices, edges, triangles, etc.
+
+
+\section{Application to data}
+Let's say we have a set of points in $\mathbb{R}^n$, and real number $\alpha \geq 0$.
+
+\begin{enumerate}
+    \item The \textbf{Vietoris-Rips complex} \( VR_\alpha(X) \) is the simplicial complex whose k-simplicies \([x_1,\dots,x_k]\) such that \( d_X(x_i,x_j) \leq \alpha \) for all \( i,j \).
+    So when the balls of radius \(\frac\alpha2 \)  around the points in \(X\) are not disjoint we can connect them with a 1-simplex. And when the balls of radius \(\frac\alpha2 \)  around the points in \(X\) are not disjoint we can connect them with a 2-simplex. And so on.
+
+    \item The \textbf{Cech complex} \( Cech_\alpha(X) \) is the simplicial complex such that the k+1 closed balls of radius \(\alpha \) around the points in \(X\) have a non-empty intersection.
+\end{enumerate}
+
+\end{document}
