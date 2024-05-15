@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# But not .tex and .pdf files
+!*.tex
+!*.pdf
+
+# Also, do not ignore directories, as ignoring directories can ignore the contents inside them
+!*/
+
