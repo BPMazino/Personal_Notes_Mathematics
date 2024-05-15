@@ -1,0 +1,130 @@
+\documentclass{beamer}
+\usepackage{preamble}
+
+%Information to be included in the title page:
+\title{My TER project on Neural Network Verification}
+\author{Nassim Arifette}
+\institute{Université Paris-Saclay}
+\date{2024}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{How was my internship structured?}
+    \begin{itemize}
+    \item First part: Take a course on Neural Network Verification at LIX (École Polytechnique)
+    \item Second part: Litterature review on the subject and reading the main paper
+    \item Third part: Implementing the main algorithm in Julia
+    \item Fourth part: Testing the algorithm on some benchmarks
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{What is Neural Network Verification?}
+    \begin{itemize}
+    \item Neural Network Verification is the process of verifying that a neural network satisfies a given property.
+    \item The property can be anything, for example: "The network classifies all images of cats as cats even if they are slightly modified."
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \begin{minipage}{0.40\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{image.png}
+            %\caption{Image of cat}
+            \label{fig:cat1}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.40\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{cat_dark.png}
+            %\caption{Image of cat darker}
+            \label{fig:cat2}
+        \end{minipage}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Formally}
+    We define a neural network as a function $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$.
+    And we define a property as a set $X \subset \mathbb{R}^n$.
+        \[X = \{x \in \mathbb{R}^n : \|x - c\| < \epsilon \} \]
+    We define a verification function;
+    \[f^S: \mathcal{P}( \mathbb{R}^n) \to \mathcal{P}( \mathbb{R}^m)\] such that $f^S(X) = \{y \mid x \in X, x = f(x)\}$.
+
+    We want to verify, by computing \(f^S(X) \), if the class of the output \(r \in \R^m\) is a cat: 
+    \[ f^S(X) \subseteq \{y \mid class(y) = \text{cat} \} \]
+
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{What I did during the course}
+    \begin{itemize}
+        \item Verification using intervals/boxes/hyperrectangles
+        \item Verification using Zonotopes
+        \item Probabilistic verification
+        \item Analysis of the robustness of neural networks using Zones and Tropical Algebra
+        \item  Quantified properties of neural networks,
+        and neural network controlled CPS
+    \end{itemize}
+
+In this presentation I will focus on the verification using Tropical Algebra and Zones.
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Verification methods using Zones}
+    % definition of a zone
+
+        Let \(x \in \mathbb{R}^n \). The zone domain is defined by:
+        \[(\bigwedge_{i\leq i,j\leq n}^n x_i - x_j \leq c_{i,j}) \land (\bigwedge_{1\leq i\leq n} a_i \leq x_i \leq b_i)\]
+        where \(a_i, b_i,  \in \mathbb{R} \) and \(c_{i,j} \in \mathbb{R} \cup \{+\infty\} \).
+
+    In julia we can define it like this : 
+\begin{lstlisting}[language= Julia]
+struct Zone
+    numinp::Int 
+    numvars::Int
+    DBM::Matrix{Float64}
+end
+\end{lstlisting}
+And we can define \((n+1) \times (n+1) \) matrix \(C = (c_{i_j})\) called a DBM (difference bound matrix) representing the zone:
+\[ \gamma(C) = \{x \in \mathbb{R}^n \mid \forall i,j \in \{0, \ldots, n\}, x_i - x_j \leq c_{i,j} \land x_0 = 0 \} \]
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Closure of Zone}
+
+The closed matrix \(C* \) is the smallest matrix that represents the same set of points as \(C \). It can be computed by the Floy-Warshall algorithm to update \((c_{i,j})_{0\leq i,j\leq n} \) as follows:
+\begin{enumerate}
+    \item Initialize \(c^*_{i,j} = c_{i,j} \) for all \(i,j \in \{0, \ldots, n\} \).
+    \item For all \(i,j,k \in \{0, \ldots, n\} \),, \(c^*_{i,j} = \min(c^*_{i,j}, c^*_{i,k} + c^*_{k,j}) \).
+\end{enumerate}
+
+% code of the julia implementation of the floyd warshall algorithm
+\begin{lstlisting}[language= Julia]
+function zone_closure(input::Zone)
+    c = input.DBM
+    n = input.numvars + input.numinp + 1
+    for k in 1:n
+        for i in 1:n
+            for j in 1:n
+                c[i, j] = min(c[i, j], c[i, k] + c[k, j])
+            end
+        end
+    end
+    return Zone(input.numinp, input.numvars, c)
+end
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+\frametitle{Abstraction of linear maps}
+    We can define the abstraction of a linear map \(f: \mathbb{R}^n \to \mathbb{R}^m \) as a matrix \(A \in \mathbb{R}^{m \times n} \) and a vector \(b \in \mathbb{R}^m \) such that:
+    \[f(x) = Ax + b \]
+
+    We can define the abstraction of a linear map as a tuple \((A, b) \) in julia:
+\end{frame}
+
+\end{document}
